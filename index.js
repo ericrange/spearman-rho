@@ -17,22 +17,25 @@ class Spearman {
   }
 
   prepare(values) {
-    let tmp = [];
-    _.map(values, (value, index) => {
-      tmp.push({
-        index: index + 1,
-        value,
-        rank: null
+    return _.chain(values)
+      .map((value, index) => {
+        return {
+          index: index++,
+          value: value,
+          rank: 0
+        };
       })
-    });
-    return tmp;
+      .value();
   }
 
-  addRank(timeSeries) {
-    return _.map(timeSeries, (val, index) => {
-      val.rank = index + 1
-      return val;
-    });
+  addRank(values) {
+    return _.chain(values)
+      .sortBy('value')
+      .map((value, index) => {
+        value.rank = index++
+          return value;
+      })
+      .value();
   }
 
   standardizeRank(timeSeries) {
@@ -50,6 +53,15 @@ class Spearman {
       .value();
   }
 
+  d2(standardizedRankedValues1, standardizedRankedValues2) {
+    let tmpSum = 0;
+    for (let i = 0; i < this._length; i++) {
+      tmpSum += Math.pow(
+        standardizedRankedValues1[i].rank - standardizedRankedValues2[i].rank, 2);
+    }
+    return tmpSum;
+  }
+
   Tx(values) {
     return _.chain(values)
       .groupBy('rank')
@@ -59,25 +71,19 @@ class Spearman {
   }
 
   calc() {
-    let sortByValues1 = _.sortBy(this.timeSeries1, 'value');
-    let rankedValues1 = this.addRank(sortByValues1);
+    let rankedValues1 = this.addRank(this.timeSeries1);
     let standardizedRankedValues1 = this.standardizeRank(rankedValues1);
 
-    let sortByValues2 = _.sortBy(this.timeSeries2, 'value');
-    let rankedValues2 = this.addRank(sortByValues2);
+    let rankedValues2 = this.addRank(this.timeSeries2);
     let standardizedRankedValues2 = this.standardizeRank(rankedValues2);
 
-    let sumRankDiffSquared = 0;
-    for (let i = 0; i < this._length; i++) {
-      sumRankDiffSquared += Math.pow(
-        standardizedRankedValues1[i].rank - standardizedRankedValues2[i].rank, 2);
-    }
+    let sumOfd2 = this.d2(standardizedRankedValues1, standardizedRankedValues2);
 
     let T1 = this.Tx(standardizedRankedValues1);
     let T2 = this.Tx(standardizedRankedValues2);
 
     let rs =
-      (Math.pow(this._length, 3) - this._length - 0.5 * T1 - 0.5 * T2 - 6 * sumRankDiffSquared) /
+      (Math.pow(this._length, 3) - this._length - 0.5 * T1 - 0.5 * T2 - 6 * sumOfd2) /
       (Math.sqrt((Math.pow(this._length, 3) - this._length - T1) * (Math.pow(this._length, 3) - this._length - T2)));
 
     console.log(rs);
