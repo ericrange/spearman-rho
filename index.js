@@ -50,14 +50,11 @@ class Spearman {
       .value();
   }
 
-  d2(stdRankedX, stdRankedY) {
-    let tmpSum = 0;
-    const n = this.n;
-    for (let i = 0; i < n; i++) {
-      tmpSum += Math.pow(
-        stdRankedX[i].rank - stdRankedY[i].rank, 2);
-    }
-    return tmpSum;
+  d2(X, Y) {
+    return _.chain(this.n)
+      .times((i) => Math.pow(X[i].rank - Y[i].rank, 2))
+      .sum()
+      .value();
   }
 
   Tx(values) {
