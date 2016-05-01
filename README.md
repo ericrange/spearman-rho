@@ -1,5 +1,8 @@
 # Spearman-RHO
 Spearman's rank correlation coefficient in NodeJS
+```shell
+npm install spearman-rho --save
+```
 ```javascript
 "use strict";
 
