@@ -1,5 +1,10 @@
 # Spearman-RHO
-Spearman's rank correlation coefficient in NodeJS
+Spearman's rank correlation coefficient in NodeJS.
+
+In statistics, Spearman's rank correlation coefficient (or Spearman's rho) is a nonparametric measure of statistical dependence between two variables.
+
+It assesses how well the relationship between two variables can be described using a monotonic function. If there are no repeated data values, a perfect Spearman correlation of +1 or −1 occurs when each of the variables is a perfect monotone function of the other. (Wikipedia)
+
 ```shell
 npm install spearman-rho --save
 ```
