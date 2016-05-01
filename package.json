@@ -1,0 +1,28 @@
+{
+  "name": "spearman-rho",
+  "version": "1.0.0",
+  "description": "Spearman's rank correlation coefficient",
+  "main": "spearman-rho.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericrange/Spearman-RHO.git"
+  },
+  "keywords": [
+    "Spearman",
+    "rank",
+    "correlation",
+    "coefficient"
+  ],
+  "author": "Eric Range <mail@eric-range.de> (https://eric-range.de)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ericrange/Spearman-RHO/issues"
+  },
+  "homepage": "https://github.com/ericrange/Spearman-RHO#readme",
+  "dependencies": {
+    "lodash": "^4.11.1"
+  }
+}

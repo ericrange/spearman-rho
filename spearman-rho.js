@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 /* Spearman's rank correlation coefficient */
 /* https://de.wikipedia.org/wiki/Rangkorrelationskoeffizient */
-class Spearman {
+module.exports = class SpearmanRHO {
   constructor(X, Y) {
     if (X.length !== Y.length) {
       throw new Error('Datasets do not have the same length.');
@@ -85,6 +85,3 @@ class Spearman {
     return rs;
   }
 }
-
-let spearman = new Spearman([2.0, 3.0, 3.0, 5.0, 5.5, 8.0, 10.0, 10.0], [1.5, 1.5, 4.0, 3.0, 1.0, 5.0, 5.0, 9.5]);
-console.log(spearman.calc());
