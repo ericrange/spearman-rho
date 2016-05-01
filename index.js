@@ -10,7 +10,7 @@ class Spearman {
       throw new Error('Datasets do not have the same length.');
     }
 
-    this._length = timeSeries1.length = timeSeries2.length;
+    this.n = timeSeries1.length = timeSeries2.length;
 
     this.timeSeries1 = this.prepare(timeSeries1);
     this.timeSeries2 = this.prepare(timeSeries2);
@@ -55,7 +55,7 @@ class Spearman {
 
   d2(standardizedRankedValues1, standardizedRankedValues2) {
     let tmpSum = 0;
-    for (let i = 0; i < this._length; i++) {
+    for (let i = 0; i < this.n; i++) {
       tmpSum += Math.pow(
         standardizedRankedValues1[i].rank - standardizedRankedValues2[i].rank, 2);
     }
@@ -71,24 +71,25 @@ class Spearman {
   }
 
   calc() {
-    let rankedValues1 = this.addRank(this.timeSeries1);
-    let standardizedRankedValues1 = this.standardizeRank(rankedValues1);
+    const rankedValues1 = this.addRank(this.timeSeries1);
+    const standardizedRankedValues1 = this.standardizeRank(rankedValues1);
 
-    let rankedValues2 = this.addRank(this.timeSeries2);
-    let standardizedRankedValues2 = this.standardizeRank(rankedValues2);
+    const rankedValues2 = this.addRank(this.timeSeries2);
+    const standardizedRankedValues2 = this.standardizeRank(rankedValues2);
 
-    let sumOfd2 = this.d2(standardizedRankedValues1, standardizedRankedValues2);
+    const sumOfd2 = this.d2(standardizedRankedValues1, standardizedRankedValues2);
 
-    let T1 = this.Tx(standardizedRankedValues1);
-    let T2 = this.Tx(standardizedRankedValues2);
+    const T1 = this.Tx(standardizedRankedValues1);
+    const T2 = this.Tx(standardizedRankedValues2);
 
-    let rs =
-      (Math.pow(this._length, 3) - this._length - 0.5 * T1 - 0.5 * T2 - 6 * sumOfd2) /
-      (Math.sqrt((Math.pow(this._length, 3) - this._length - T1) * (Math.pow(this._length, 3) - this._length - T2)));
+    const numerator = Math.pow(this.n, 3) - this.n - 0.5 * T1 - 0.5 * T2 - 6 * sumOfd2;
+    const denominator = (Math.pow(this.n, 3) - this.n - T1) * (Math.pow(this.n, 3) - this.n - T2);
 
-    console.log(rs);
+    const rs = denominator <= 0 ? 0 : (numerator / Math.sqrt(denominator));
+
+    return rs;
   }
 }
 
 let spearman = new Spearman([2.0, 3.0, 3.0, 5.0, 5.5, 8.0, 10.0, 10.0], [1.5, 1.5, 4.0, 3.0, 1.0, 5.0, 5.0, 9.5]);
-spearman.calc();
+console.log(spearman.calc());
