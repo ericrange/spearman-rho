@@ -27,37 +27,38 @@ module.exports = class SpearmanRHO {
   }
 
   addRank(values) {
-    return _.chain(values)
-      .sortBy('value')
-      .map((value, index) => {
-        value.rank = index++
-          return value;
-      })
-      .value();
+    return new Promise(function(resolve, reject) {
+      resolve(_.chain(values)
+        .sortBy('value')
+        .map((value, index) => _.set(value, 'rank', index++))
+        .value());
+    });
   }
 
   standardizeRank(timeSeries) {
-    return _.chain(timeSeries)
-      .groupBy('value')
-      .map((groupValues) => {
-        const groupMean = _.meanBy(groupValues, 'rank');
-        return _.map(groupValues, (value) =>
-          _.set(value, 'rank', groupMean)
-        );
-      })
-      .flatten()
-      .sortBy('index')
-      .value();
+    return new Promise(function(resolve, reject) {
+      resolve(_.chain(timeSeries)
+        .groupBy('value')
+        .map((groupValues) => {
+          const groupMean = _.meanBy(groupValues, 'rank');
+          return _.map(groupValues, (value) =>
+            _.set(value, 'rank', groupMean)
+          );
+        })
+        .flatten()
+        .sortBy('index')
+        .value());
+    });
   }
 
-  d2(X, Y) {
+  Ed_2(X, Y) {
     return _.chain(this.n)
       .times((i) => Math.pow(X[i].rank - Y[i].rank, 2))
       .sum()
       .value();
   }
 
-  Tx(values) {
+  T_(values) {
     return _.chain(values)
       .groupBy('rank')
       .map((value) => _.toInteger(value.length))
@@ -66,22 +67,24 @@ module.exports = class SpearmanRHO {
   }
 
   calc() {
-    const rankedX = this.addRank(this.X);
-    const stdRankedX = this.standardizeRank(rankedX);
+    const that = this;
+    return new Promise(function(resolve, reject) {
+      Promise.all([
+        that.addRank(that.X).then((X) => that.standardizeRank(X)),
+        that.addRank(that.Y).then((Y) => that.standardizeRank(Y))
 
-    const rankedY = this.addRank(this.Y);
-    const stdRankedY = this.standardizeRank(rankedY);
+      ]).then((values) => {
+        const X = values[0], Y = values[1];
 
-    const sumOfd2 = this.d2(stdRankedX, stdRankedY);
+        const Tx = that.T_(X);
+        const Ty = that.T_(Y);
 
-    const Tx = this.Tx(stdRankedX);
-    const Ty = this.Tx(stdRankedY);
+        const numerator = Math.pow(that.n, 3) - that.n - 0.5 * Tx - 0.5 * Ty - 6 * that.Ed_2(X, Y);
+        const denominator = (Math.pow(that.n, 3) - that.n - Tx) * (Math.pow(that.n, 3) - that.n - Ty);
 
-    const numerator = Math.pow(this.n, 3) - this.n - 0.5 * Tx - 0.5 * Ty - 6 * sumOfd2;
-    const denominator = (Math.pow(this.n, 3) - this.n - Tx) * (Math.pow(this.n, 3) - this.n - Ty);
+        resolve(denominator <= 0 ? 0 : (numerator / Math.sqrt(denominator)));
 
-    const rs = denominator <= 0 ? 0 : (numerator / Math.sqrt(denominator));
-
-    return rs;
+      }).catch((err) => console.error(err));
+    });
   }
 }

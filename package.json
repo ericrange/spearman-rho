@@ -1,6 +1,6 @@
 {
   "name": "spearman-rho",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Spearman's rank correlation coefficient",
   "main": "spearman-rho.js",
   "scripts": {
