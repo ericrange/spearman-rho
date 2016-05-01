@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ericrange/Spearman-RHO.git"
+    "url": "git+https://github.com/ericrange/spearman-rho.git"
   },
   "keywords": [
     "Spearman",
@@ -19,9 +19,9 @@
   "author": "Eric Range <mail@eric-range.de> (https://eric-range.de)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ericrange/Spearman-RHO/issues"
+    "url": "https://github.com/ericrange/spearman-rho/issues"
   },
-  "homepage": "https://github.com/ericrange/Spearman-RHO#readme",
+  "homepage": "https://github.com/ericrange/spearman-rho#readme",
   "dependencies": {
     "lodash": "^4.11.1"
   }
