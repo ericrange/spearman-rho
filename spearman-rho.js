@@ -10,19 +10,20 @@ module.exports = class SpearmanRHO {
       throw new Error('Datasets do not have the same length.');
     }
 
+    this.X = X;
+    this.Y = Y;
     this.n = X.length = Y.length;
-
-    this.X = this.prepare(X);
-    this.Y = this.prepare(Y);
   }
 
   prepare(values) {
-    return _.map(values, (value, index) => {
-      return {
-        index: index++,
-        value: value,
-        rank: 0
-      };
+    return new Promise(function(resolve, reject) {
+      resolve(_.map(values, (value, index) => {
+        return {
+          index: index++,
+          value: value,
+          rank: 0
+        };
+      }));
     });
   }
 
@@ -70,20 +71,28 @@ module.exports = class SpearmanRHO {
     const that = this;
     return new Promise(function(resolve, reject) {
       Promise.all([
-        that.addRank(that.X).then((X) => that.standardizeRank(X)),
-        that.addRank(that.Y).then((Y) => that.standardizeRank(Y))
+        that.prepare(that.X)
+        .then((X) => that.addRank(X))
+        .then((X) => that.standardizeRank(X)),
+
+        that.prepare(that.Y)
+        .then((Y) => that.addRank(Y))
+        .then((Y) => that.standardizeRank(Y))
 
       ]).then((values) => {
         const X = values[0], Y = values[1];
 
-        const Tx = that.T_(X);
-        const Ty = that.T_(Y);
+        Promise.all([that.T_(X), that.T_(Y)])
+          .then((values) => {
+            const Tx = values[0];
+            const Ty = values[1];
 
-        const numerator = Math.pow(that.n, 3) - that.n - 0.5 * Tx - 0.5 * Ty - 6 * that.Ed_2(X, Y);
-        const denominator = (Math.pow(that.n, 3) - that.n - Tx) * (Math.pow(that.n, 3) - that.n - Ty);
+            const numerator = Math.pow(that.n, 3) - that.n - 0.5 * Tx - 0.5 * Ty - 6 * that.Ed_2(X, Y);
+            const denominator = (Math.pow(that.n, 3) - that.n - Tx) * (Math.pow(that.n, 3) - that.n - Ty);
 
-        resolve(denominator <= 0 ? 0 : (numerator / Math.sqrt(denominator)));
+            resolve(denominator <= 0 ? 0 : (numerator / Math.sqrt(denominator)));
 
+          }).catch((err) => console.error(err));
       }).catch((err) => console.error(err));
     });
   }
