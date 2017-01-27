@@ -11,12 +11,14 @@ npm install spearman-rho --save
 ```javascript
 "use strict";
 
-const SpearmanRHO = require("spearman-rho");
+const SpearmanRHO = require('spearman-rho');
 
-const X = [2.0, 3.0, 3.0, 5.0, 5.5, 8.0, 10.0, 10.0];
-const Y = [1.5, 1.5, 4.0, 3.0, 1.0, 5.0, 5.0, 9.5];
+const x = [2.0, 3.0, 3.0, 5.0, 5.5, 8.0, 10.0, 10.0];
+const y = [1.5, 1.5, 4.0, 3.0, 1.0, 5.0, 5.0, 9.5];
 
-const spearmanRHO = new SpearmanRHO(X, Y);
-spearmanRHO.calc().then((value) => console.log(value));
+const spearmanRHO = new SpearmanRHO(x, y);
+spearmanRHO.calc()
+  .then(value => console.log(value))
+  .catch(err => console.error(err));
 // 0.6829268292682927
 ```
